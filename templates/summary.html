@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<h2>Review and Reserve Flight</h2>
+  <h3></h3><p>Empname:</p></h3>
+<h5></h5><p>{{session['name']}}</p></h5>
+<h3></h3><p>Email</p></h3>
+<h5></h5><p>{{session['email']}}</p></h5></br>
+
+<h3></h3><p>Flight Name:</p></h3>
+<h5></h5><p>{{session['getFlightName']}}</p></h5></br>
+<h3></h3><p>Flight Date</p></h3>
+<h5></h5><p>{{session['trDate']}}</p></h5></br>
+
+<h3></h3><p>Departure Time:</p></h3>
+<h5></h5><p> {{session['getDepTime']}}</p></h5></br>
+<h3></h3><p>From Location</p></h3>
+<h5></h5><p>{{session['getFromLocation']}}</p></h5></br>
+
+<h3></h3><p>Flight Duration:</p></h3>
+<h5></h5><p>{{session['getFlightDuration']}}</p></h5></br>
+<h3></h3><p>Via / Non Stop</p></h3>
+<h5></h5><p>{{session['getFlightLayerInfo']}} </p></h5></br>
+
+
+<h3></h3><p>Arrival Time:</p></h3>
+<h5></h5><p>{{session['getArrivalTime']}}</p></h5></br>
+<h3></h3><p>Via / Non Stop</p></h3>
+<h5></h5><p>{{session['getFlightLayerInfo']}} </p></h5></br>
+
+<h3></h3><p>To Location:</p></h3>
+<h5></h5><p>{{session['getToLocation']}} </p></h5></br>
+<h3></h3><p>Flight Price</p></h3>
+<h5></h5><p>{{session['getFlightPrice']}}</p></h5></br>
+<form action="/wkhtmltopdf_template" method="post">
+ <button type="submit">Generate PDF</button>
+</form>
+
+</body>
+</html>

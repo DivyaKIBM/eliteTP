@@ -1,0 +1,182 @@
+
+pipeline {
+  agent {
+    kubernetes {
+      yaml """
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    some-label: python
+spec:
+  securityContext:
+    runAsUser: 10000
+    runAsGroup: 10000
+  containers:
+  - name: jnlp
+    image: 'jenkins/jnlp-slave:4.3-4-alpine'
+    args: ['\$(JENKINS_SECRET)', '\$(JENKINS_NAME)']
+  - name: python3
+    image: python:3.7.6
+    command:
+    - cat
+    tty: true
+    imagePullPolicy: Always
+    securityContext: # https://github.com/GoogleContainerTools/kaniko/issues/681
+      runAsUser: 0
+      runAsGroup: 0
+  - name: sonarscanner
+    image: sonarsource/sonar-scanner-cli:latest
+    command:
+    - cat
+    tty: true
+    imagePullPolicy: Always 
+    securityContext: # https://github.com/GoogleContainerTools/kaniko/issues/681
+      runAsUser: 0
+      runAsGroup: 0
+  - name: kaniko
+    image: gcr.io/kaniko-project/executor:debug-1534f90c9330d40486136b2997e7972a79a69baf
+    imagePullPolicy: Always
+    command:
+    - cat
+    tty: true
+    securityContext: # https://github.com/GoogleContainerTools/kaniko/issues/681
+      runAsUser: 0
+      runAsGroup: 0
+  - name: openshift-cli
+    image: openshift/origin-cli:v3.11.0
+    command:
+    - cat
+    tty: true
+    securityContext: # https://github.com/GoogleContainerTools/kaniko/issues/681
+      runAsUser: 0
+      runAsGroup: 0
+  volumes:
+  - name: regsecret
+    projected:
+      sources:
+      - secret:
+          name: regsecret
+          items:
+            - key: .dockerconfigjson
+              path: config.json
+  imagePullSecrets:
+  - name: regsecret
+"""
+    }
+  }
+
+
+  environment {
+  
+
+    /* -----------DevOps Commander  created env variables------------ */
+
+DOCKER_URL= "uk.icr.io/hk21-ctrl-alt-elite"
+DOCKER_CREDENTIAL_ID= "dc-docker-198"
+OCP_URL= "https://c100-e.eu-de.containers.cloud.ibm.com:30421"
+OCP_CREDENTIAL_ID= "dc-ocp-198"
+SONARQUBE_URL= "https://sonarqube-3-6.container-crush-02-4044f3a4e314f4bcb433696c70d13be9-0000.eu-de.containers.appdomain.cloud"
+SONARQUBE_CREDENTIAL_ID= "dc-sonarqube-198"
+CLAIR_URL= "http://clair-3-3-clair:6060"
+CLAIR_CREDENTIAL_ID= "dc-clair-198"
+NAMESPACE= "hk21-ctrl-alt-elite"
+INGRESS= "container-crush-02-4044f3a4e314f4bcb433696c70d13be9-0000.eu-de.containers.appdomain.cloud"
+
+    /* -----------DevOps Commander  created env variables------------ */
+
+
+    DOCKER_IMAGE = "python-flask"
+    DEPLOYMENT_NAME = "${JOB_BASE_NAME}".toLowerCase()
+    DOCKER_TAG = "dev"
+
+
+  }
+  stages {
+
+    stage('Develop: Build') {
+      steps {
+        container('python3')  {
+          sh '''
+               pip install -r requirements.txt
+             '''
+        }
+      }
+    }
+
+
+    stage('Sonar Scan') {
+      when {
+             beforeOptions true
+             expression { env.SONARQUBE_URL }
+         }
+      steps {
+       container('sonarscanner') {
+        sh '''
+        sonar-scanner \
+    -Dsonar.host.url=${SONARQUBE_URL} \
+      -Dsonar.projectKey=${NAMESPACE}-${APPLICATION} \
+      -Dsonar.sources=. \
+    -Dsonar.projectVersion=${BRANCH}-${BUILD_NUMBER} \
+    -Dsonar.exclusions=node_modules/**
+        '''
+       }
+      }
+    }
+
+
+
+
+stage ('Build: Docker') {
+            steps {
+                container('kaniko') {
+	                   withCredentials([usernamePassword(credentialsId: "${DOCKER_CREDENTIAL_ID}", usernameVariable: 'REGISTRY_USERNAME', passwordVariable: 'REGISTRY_PASSWORD')]) {
+                    /* Kaniko uses secret 'regsecret' declared in the POD to authenticate to the registry and push the image */
+                    sh '''
+                    mkdir -p /kaniko/.docker
+                    echo '{\"auths\":{\"'${DOCKER_URL}'\":{\"username\":\"'${REGISTRY_USERNAME}'\",\"password\":\"'${REGISTRY_PASSWORD}'\"}}}' > /kaniko/.docker/config.json
+			              cat /kaniko/.docker/config.json
+		                /kaniko/executor -f `pwd`/Dockerfile -c `pwd` --insecure --skip-tls-verify --cache=true --destination=${DOCKER_URL}/${DOCKER_IMAGE}:${DOCKER_TAG}
+		               '''
+                     }
+	               }
+              }
+            }
+
+ stage('Deploy: To Openshift') {
+        steps {
+          container('openshift-cli') {
+	            withCredentials([
+	                  usernamePassword(credentialsId: "${OCP_CREDENTIAL_ID}", usernameVariable: 'REGISTRY_USERNAME', passwordVariable: 'TOKEN'),
+		                usernamePassword(credentialsId: "${DOCKER_CREDENTIAL_ID}", usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')
+	            ]) {
+              sh '''
+                    oc login --server="${OCP_URL}" --token="${TOKEN}"
+                    oc project ${NAMESPACE}
+                    pwd
+                    ls -ltr
+                    oc create secret docker-registry docker-repo-cred \
+                    --docker-server=${DOCKER_URL} \
+                    --docker-username=${DOCKER_USERNAME} \
+                    --docker-password=${DOCKER_PASSWORD} \
+                    --docker-email=${DOCKER_PASSWORD} \
+                    --namespace=${NAMESPACE} || true
+
+                    sed -e "s~{REGISTRY_NAME}~$DOCKER_URL~g" \
+                        -e "s~{DOCKER_IMAGE}~$DOCKER_IMAGE~g" \
+                        -e "s~{DOCKER_TAG}~$DOCKER_TAG~g" \
+                        -e "s~{K8S_DEPLOYMENT}~$DEPLOYMENT_NAME~g" \
+                        -e "s~{INGRESS_URL}~$INGRESS~g" -i devops/k8s/*.yml
+                    oc apply -f devops/k8s/ --namespace="${NAMESPACE}" || true
+                    oc create route edge --service=${DEPLOYMENT_NAME}-svc --hostname=$DEPLOYMENT_NAME.$INGRESS || true
+                    oc wait --for=condition=available --timeout=120s deployment/${DEPLOYMENT_NAME} --namespace="${NAMESPACE}" || true
+              '''
+	            }
+            }
+          }
+        }
+
+
+    }
+}
+

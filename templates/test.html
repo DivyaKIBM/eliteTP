@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html>
+<title>Itinerary</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+<style>
+  * {
+  box-sizing: border-box;
+}
+
+/*NavBar*/
+.nav {
+  height: 50px;
+  width: 100%;
+  background-color: #4d4d4d;
+  position: relative;
+}
+
+.nav > .nav-header {
+  display: inline;
+}
+
+.nav > .nav-header > .nav-title {
+  display: inline-block;
+  font-size: 22px;
+  color: #fff;
+  padding: 10px 10px 10px 10px;
+}
+
+.nav > .nav-btn {
+  display: none;
+}
+
+.nav > .nav-links {
+  display: inline;
+  float: right;
+  font-size: 18px;
+}
+
+.nav > .nav-links > a {
+  display: inline-block;
+  padding: 13px 10px 13px 10px;
+  text-decoration: none;
+  color: #efefef;
+}
+
+.nav > .nav-links > a:hover {
+  background-color: rgba(0, 0, 0, 0.3);
+}
+
+.nav > #nav-check {
+  display: none;
+}
+
+@media (max-width:600px) {
+  .nav > .nav-btn {
+    display: inline-block;
+    position: absolute;
+    right: 0px;
+    top: 0px;
+  }
+  .nav > .nav-btn > label {
+    display: inline-block;
+    width: 50px;
+    height: 50px;
+    padding: 13px;
+  }
+  .nav > .nav-btn > label:hover,.nav  #nav-check:checked ~ .nav-btn > label {
+    background-color: rgba(0, 0, 0, 0.3);
+  }
+  .nav > .nav-btn > label > span {
+    display: block;
+    width: 25px;
+    height: 10px;
+    border-top: 2px solid #eee;
+  }
+  .nav > .nav-links {
+    position: absolute;
+    display: block;
+    width: 100%;
+    background-color: #333;
+    height: 0px;
+    transition: all 0.3s ease-in;
+    overflow-y: hidden;
+    top: 50px;
+    left: 0px;
+  }
+  .nav > .nav-links > a {
+    display: block;
+    width: 100%;
+  }
+  .nav > #nav-check:not(:checked) ~ .nav-links {
+    height: 0px;
+  }
+  .nav > #nav-check:checked ~ .nav-links {
+    height: calc(100vh - 50px);
+    overflow-y: auto;
+  }
+}
+/*Nav TOP Bar end*/
+
+/* The Table Attributes */
+table {
+  text-align: center;
+  width: 700px;
+  margin: 20px auto;
+  font-family: sans-serif;
+  border-bottom: 5px solid #009688;
+}
+/* The Attributes that the Head and the Body of the Table Share */
+th,
+td {
+  padding: 10px;
+}
+/* Attributes of the Head of the Body */
+th {
+  background-color: #404040;
+  color: white;
+}
+/* Attributes of Each Cell */
+td {
+  background-color: #eee;
+}
+/*Attributes of Span*/
+span {
+  padding: 5px 10px;
+  margin: 3px;
+  color: white;
+}
+/*Attributes */
+.blue {
+  background-color: #03a9f4;
+}
+.pink {
+  background-color: #e91e63;
+}
+
+
+</style>
+
+<body>
+<div class="nav">
+  <input type="checkbox" id="nav-check">
+  <div class="nav-header">
+    <div class="nav-title">
+      <marquee> {{ signUpMessage }} </marquee>
+    </div>
+  </div>
+  <div class="nav-btn">
+    <label for="nav-check">
+      <span></span>
+      <span></span>
+      <span></span>
+    </label>
+  </div>
+
+  <div class="nav-links">
+    <a href="/">Home</a>
+    <a href="/login">SignIn</a>
+    <a href="/signUp">SignUp</a>
+
+  </div>
+</div>
+
+<div class="w3-display-container" style="margin-bottom:50px">
+  <img src="/static/images/beach3.jpg" style="width:100%">
+  <div class="w3-display-bottomleft w3-container w3-amber w3-hover-orange w3-hide-small"
+   style="bottom:10%;opacity:0.7;width:70%">
+   <table>
+     <tr></tr>
+     <tr></tr>
+  <tr>
+    <th>flightNames</th>
+    <th>DepTime</th>
+    <th>FromLocation</th>
+    <th>flightDuration</th>
+    <th>flightLayerInfo</th>
+    <th>ArrivalTime</th>
+    <th>ToLocation</th>
+    <th>flightPrice</th>
+  </tr>
+     <!--<tr>
+     <td>E001</td>
+    <td>Rajiv Kumar</td>
+    <td>Bhubaneswar</td>
+    <td><input id="edit" type="submit" name="edit" value="Book" onclick="set_background()"/></td>
+     </tr>-->
+    {% for row_index in range(listflightNames|count) %}
+  <tr>
+    <!--<form action="/summary" class="clsItinerary" method="post">-->
+      <form action="/summary" method="post">
+    <td><input type="hidden" name="tdFlightName"  value="{{ listflightNames[row_index] }}">{{ listflightNames[row_index] }}</td>
+    <td><input type="hidden" name="tdDepTime"  value="{{ listDepTime[row_index] }}">{{ listDepTime[row_index] }}</td>
+    <td><input type="hidden" name="tdFromLocation"  value="{{ listFromLocation[row_index] }}">{{ listFromLocation[row_index] }}</td>
+    <td><input type="hidden" name="tdFlightDuration"  value="{{ listflightDuration[row_index] }}">{{ listflightDuration[row_index] }}</td>
+    <td><input type="hidden" name="tdFlightLayerInfo"  value="{{ listflightLayerInfo[row_index] }}">{{ listflightLayerInfo[row_index] }}</td>
+    <td><input type="hidden" name="tdArrivalTime"  value="{{ listArrivalTime[row_index] }}">{{ listArrivalTime[row_index] }}</td>
+    <td><input type="hidden" name="tdToLocation"  value="{{ listToLocation[row_index] }}">{{ listToLocation[row_index] }}</td>
+    <td><input type="hidden" name="tdFlightPrice"  value="{{ listflightPrice[row_index] }}">{{ listflightPrice[row_index] }}</td>
+        <td><button id="btnBooking" type="submit">Book</button></td>
+    <!--<td><input id="edit" type="submit" name="btnBook" value="Book" /></td>-->
+   </form>
+  </tr>
+
+     {% endfor %}
+
+   </table>
+</div>
+</div>
+
+<div class="w3-row w3-container" style="margin:50px 0">
+<div class="w3-half w3-container">
+  <div class="w3-topbar w3-border-amber">
+    <img src="/static/images/cellphone.jpg" style="width:100%">
+    <h2>Smart Vacation</h2>
+    <p></p>
+  </div>
+</div>
+
+<div class="w3-half w3-container">
+  <div class="w3-topbar w3-border-amber">
+    <img src="/static/images/cellphone.jpg" style="width:100%">
+    <h2>Super Offers</h2>
+    <p></p>
+  </div>
+</div>
+</div>
+
+<div class="w3-row w3-container" style="margin:50px 0">
+<div class="w3-half w3-container">
+  <div class="w3-topbar w3-border-orange">
+    <img src="/static/images/nowornever.jpg" style="width:100%">
+    <h2>Fulfill your dreams</h2>
+    <p>Wherever you travel, Remember us</p>
+  </div>
+</div>
+
+<div class="w3-half w3-container">
+  <div class="w3-topbar w3-border-orange">
+    <img src="/static/images/nowornever.jpg" style="width:100%">
+    <h2>Realize Your Dreams</h2>
+    <p>Don't wait until it is too late.</p>
+    </div>
+</div>
+</div>
+</form>
+</body>
+
+
+</html>

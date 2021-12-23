@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Search Flights</title>
+<style>
+@import url("https://fonts.googleapis.com/css2?family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap");
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0px;
+  font-family: 'segoe ui';
+}
+/*NavBar*/
+.nav {
+  height: 50px;
+  width: 100%;
+  background-color: #4d4d4d;
+  position: relative;
+}
+
+.nav > .nav-header {
+  display: inline;
+}
+
+.nav > .nav-header > .nav-title {
+  display: inline-block;
+  font-size: 22px;
+  color: #fff;
+  padding: 10px 10px 10px 10px;
+}
+
+.nav > .nav-btn {
+  display: none;
+}
+
+.nav > .nav-links {
+  display: inline;
+  float: right;
+  font-size: 18px;
+}
+
+.nav > .nav-links > a {
+  display: inline-block;
+  padding: 13px 10px 13px 10px;
+  text-decoration: none;
+  color: #efefef;
+}
+
+.nav > .nav-links > a:hover {
+  background-color: rgba(0, 0, 0, 0.3);
+}
+
+.nav > #nav-check {
+  display: none;
+}
+
+@media (max-width:600px) {
+  .nav > .nav-btn {
+    display: inline-block;
+    position: absolute;
+    right: 0px;
+    top: 0px;
+  }
+  .nav > .nav-btn > label {
+    display: inline-block;
+    width: 50px;
+    height: 50px;
+    padding: 13px;
+  }
+  .nav > .nav-btn > label:hover,.nav  #nav-check:checked ~ .nav-btn > label {
+    background-color: rgba(0, 0, 0, 0.3);
+  }
+  .nav > .nav-btn > label > span {
+    display: block;
+    width: 25px;
+    height: 10px;
+    border-top: 2px solid #eee;
+  }
+  .nav > .nav-links {
+    position: absolute;
+    display: block;
+    width: 100%;
+    background-color: #333;
+    height: 0px;
+    transition: all 0.3s ease-in;
+    overflow-y: hidden;
+    top: 50px;
+    left: 0px;
+  }
+  .nav > .nav-links > a {
+    display: block;
+    width: 100%;
+  }
+  .nav > #nav-check:not(:checked) ~ .nav-links {
+    height: 0px;
+  }
+  .nav > #nav-check:checked ~ .nav-links {
+    height: calc(100vh - 50px);
+    overflow-y: auto;
+  }
+}
+/*Nav TOP Bar end*/
+
+
+* {
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+	font-family: "Ubuntu", sans-serif;
+}
+
+header {
+	position: relative;
+	width: 100%;
+	padding: 30px 100px;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+
+header .logo {
+	position: relative;
+	color: #222;
+	text-decoration: none;
+	font-size: 2em;
+	font-weight: 700;
+}
+
+
+.banner {
+	position: relative;
+	width: 100%;
+	padding: 0 100px;
+}
+
+.banner .bg {
+	position: relative;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 100%;
+	height: 65vh;
+	background-color: #555;
+}
+
+.cover {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+
+.content {
+	position: relative;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex-direction: column;
+}
+.content h2 {
+	position: relative;
+	color: #fff;
+	font-size: 5em;
+	text-align: center;
+}
+
+.content .btn {
+	display: inline-block;
+	background-color: #ff5a26;
+	color: #fff;
+	padding: 20px 40px;
+	text-decoration: none;
+	font-size: 1.1em;
+	margin-top: 20px;
+	letter-spacing: 2px;
+}
+
+.searchBox {
+	position: absolute;
+	bottom: 0;
+	width: 90%;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	flex-wrap: wrap;
+	background-color: #fff;
+	padding: 30px 50px;
+	transform: translateY(50%);
+	box-shadow: 0 5px 25px rgba(0, 0, 0, 0.1);
+}
+
+.searchBox .inputBx {
+	position: relative;
+	margin: 0 10px;
+}
+
+.searchBox .inputBx p {
+	color: #222;
+	margin-bottom: 10px;
+}
+
+.searchBox .inputBx input {
+	border: 1px solid #222;
+	outline: none;
+	padding: 10px;
+	width: 100%;
+	font-size: 1.1em;
+	min-width: 150px;
+}
+
+.searchBox .inputBx input[type="submit"] {
+	outline: none;
+	border: none;
+	background-color: #4d4d4d;
+	color: #fff;
+	cursor: pointer;
+	letter-spacing: 2px;
+	padding: 13px;
+}
+.menu {
+	display: none;
+}
+@media (max-width: 991px) {
+	header {
+		padding: 20px;
+	}
+	.group .navigation {
+		display: none;
+	}
+	.menu {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		font-size: 2em;
+		cursor: pointer;
+		margin-left: 20px;
+		width: 30px;
+		height: 30px;
+	}
+	.menu i {
+		position: absolute;
+		stroke-width: 20px;
+	}
+	.menu i:first-of-type,
+	.menu.active i:last-of-type {
+		z-index: 1000;
+		display: flex;
+	}
+	.menu.active i:first-of-type,
+	.menu i:last-of-type {
+		display: none;
+	}
+	.navigation.active {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		flex-direction: column;
+		position: fixed;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		background-color: #fff;
+		z-index: 100;
+	}
+	.group ul.navigation li {
+		margin: 2vh;
+	}
+	.group ul.navigation li a {
+		font-size: 5vw;
+		margin-left: 0;
+		font-weight: 600;
+	}
+	.banner {
+		padding: 0;
+	}
+	.content h2 {
+		font-size: 3em;
+	}
+	.searchBox {
+		width: 100%;
+		padding: 20px;
+		transform: translateY(100%);
+	}
+}
+
+@media (max-width: 840px) {
+	.searchBox {
+		flex-direction: column;
+	}
+	.searchBox .inputBx {
+		width: 100%;
+		margin-bottom: 20px;
+	}
+	.searchBox .inputBx:last-of-type p {
+		display: none;
+	}
+}
+.col-sm-1
+{
+	 display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/*span*/
+.seven span {
+  position: relative;
+  display: inline-block;
+}
+
+/*light and darkmode */
+body.dark {
+  background-color: #292c35;
+  /*color: white;*/
+}
+.checkbox {
+  opacity: 0;
+  position: absolute;
+}
+
+.label {
+  width: 50px;
+  height: 26px;
+  background-color:#111;
+  display: flex;
+  border-radius:50px;
+  align-items: center;
+  justify-content: space-between;
+  padding: 5px;
+  position: relative;
+  transform: scale(0.7);
+
+}
+
+.ball {
+  width: 20px;
+  height: 20px;
+  background-color: white;
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  border-radius: 50%;
+  transition: transform 0.2s linear;
+}
+
+/*  target the elemenent after the label*/
+.checkbox:checked + .label .ball{
+  transform: translateX(24px);
+}
+/*end of light and dark */
+
+</style>
+</head>
+<body>
+ <form action="/itinerary" method="post">
+<!--<header>
+	<a href="" class="logo">Travel</a>
+	<div class="group">
+		<ul class="navigation">
+			<li><a href="">Home</a></li>
+			<li><a href="">Destination</a></li>
+			<li><a href="">About</a></li>
+			<li><a href="">Contact</a></li>
+		</ul>
+		<ul class="action">
+			<li>
+				<a href=""><i class="fas fa-search"></i></a>
+			</li>
+			<li>
+				<a href=""><i class="far fa-user"></i></a>
+			</li>
+			<div class="menu">
+				<i class="fas fa-align-justify"></i><i class="far fa-times-circle"></i>
+			</div>
+		</ul>
+	</div>
+</header>-->
+<div class="nav">
+  <input type="checkbox" id="nav-check">
+  <div class="nav-header">
+    <div class="nav-title">
+      Elite Travel
+    </div>
+  </div>
+  <div class="nav-btn">
+    <label for="nav-check">
+      <span></span>
+      <span></span>
+      <span></span>
+    </label>
+  </div>
+
+  <div class="nav-links">
+    <a href="/">Home</a>
+	<a href="/logout">Log Out</a>
+  </div>
+</div>
+<div class="banner">
+
+	<div class="bg">
+<!--		<img src="https://images.unsplash.com/photo-1583136160711-d68dbe61cf9c?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=750&q=80" class="cover" />-->
+		<img src="../static/images/bookinghome1.jpg" class="cover" />
+		<div class="content">
+			<h2>Explore The World</h2>
+<!--			<a href="" class="btn">Book Now</a>-->
+		</div>
+		<div class="searchBox">
+			<div class="container">
+				<div class="row">
+					<div class="col-sm-1">
+						<label>
+						<input type="radio" name="trip type" id="one-way" value="One Way">One Way
+						</label>
+					</div>
+					<div class="col-sm-2">
+						<label>
+						<input type="radio" name="trip type" id="round-trip" value="Round Trip"  onclick="myDisplayFunction()">Round Trip
+						</label>
+					</div>
+					<div class="col-sm-3">
+						<label>
+						<input type="radio" name="trip type" id="multi-way" value="Multi City">Multi City
+						</label>
+					</div>
+				</div>
+			</div>
+			<br>
+			<div class="inputBx">
+				<p>From</p>
+			<!-- <input type="text" placeholder="" />-->
+                 <div class="seven">
+                    <span class="ng-invalid">
+                      <input type="text" class="datalist" list="fromdatalist" name="fromloc" />
+                    </span>
+                    <datalist id="fromdatalist">
+                      <option value="BLR - Bengaluru">
+                      <option value="HYD - Hyderabad">
+                      <option value="MAA - Chennai">
+                      <option value="BOM - Mumbai">
+                      <option value="CCU - Kolkata">
+                      <option value="DEL - Delhi">
+                      <option value="IXM - Madurai">
+                      <option value="COK - Cochin">
+                      <option value="PNQ - Pune">
+                    </datalist>
+                  </div>
+			</div>
+			<div class="inputBx">
+				<p>To</p>
+<!--				<input type="text" placeholder="" />-->
+                  <div class="seven">
+                    <span class="ng-invalid">
+                      <input type="text" class="datalist" list="todatalist" name="toloc" />
+                    </span>
+                   <datalist id="todatalist">
+                      <option value="BLR - Bengaluru">
+                      <option value="HYD - Hyderabad">
+                      <option value="MAA - Chennai">
+                      <option value="BOM - Mumbai">
+                      <option value="CCU - Kolkata">
+                      <option value="DEL - Delhi">
+                      <option value="IXM - Madurai">
+                      <option value="COK - Cochin">
+                      <option value="PNQ - Pune">
+                    </datalist>
+                  </div>
+			</div>
+			<div class="dateInps"></div>
+			<div class="inputBx">
+				<p>Departure</p>
+				<input type="date" name ="depDate"/>
+			</div>
+			<div class="inputBx">
+				<p>Return</p>
+				<input type="date" name="retDate"/>
+			</div>
+			<div class="inputBx">
+				<p>Adults</p>
+				<select class="" style="width: 84px; max-height: 198px" name="drpAdults">
+                        <option value="0" class=" fs-3 hover:bg-secondary-500 c-pointer hover:c-white">0</option>
+                        <option value="1" class=" fs-3 hover:bg-secondary-500 c-pointer hover:c-white">1</option>
+                        <option value="2" class=" fs-3 hover:bg-secondary-500 c-pointer hover:c-white">2</option>
+                        <option value="3" class=" fs-3 hover:bg-secondary-500 c-pointer hover:c-white">3</option>
+                        <option value="4" class=" fs-3 hover:bg-secondary-500 c-pointer hover:c-white">4</option>
+                        <option value="5" class=" fs-3 hover:bg-secondary-500 c-pointer hover:c-white">5</option>
+                        <option value="6" class=" fs-3 hover:bg-secondary-500 c-pointer hover:c-white">6</option>
+                        <option value="7" class=" fs-3 hover:bg-secondary-500 c-pointer hover:c-white">7</option>
+                        <option value="8" class=" fs-3 hover:bg-secondary-500 c-pointer hover:c-white">8</option>
+                        <option value="9" class=" fs-3 hover:bg-secondary-500 c-pointer hover:c-white">9</option>
+                </select>
+                <p style="color: #999; font-size: 12px;line-height: 16px;">&nbsp;</p>
+			</div>
+			<div class="inputBx">
+				<p>Children</p>
+				<select class="" style="width: 84px; max-height: 198px" name="drpChildren">
+                        <option value="" class=" fs-3 hover:bg-secondary-500 c-pointer hover:c-white"> </option>
+                        <option value="1" class=" fs-3 hover:bg-secondary-500 c-pointer hover:c-white" selected>0</option>
+                        <option value="2" class=" fs-3 hover:bg-secondary-500 c-pointer hover:c-white">1</option>
+                        <option value="3" class=" fs-3 hover:bg-secondary-500 c-pointer hover:c-white">2</option>
+                        <option value="4" class=" fs-3 hover:bg-secondary-500 c-pointer hover:c-white">3</option>
+                        <option value="5" class=" fs-3 hover:bg-secondary-500 c-pointer hover:c-white">4</option>
+                        <option value="6" class=" fs-3 hover:bg-secondary-500 c-pointer hover:c-white">5</option>
+                        <option value="7" class=" fs-3 hover:bg-secondary-500 c-pointer hover:c-white">6</option>
+                        <option value="8" class=" fs-3 hover:bg-secondary-500 c-pointer hover:c-white">7</option>
+                        <option value="9" class=" fs-3 hover:bg-secondary-500 c-pointer hover:c-white">8</option>
+                </select>
+
+				<p style="color: #999; font-size: 12px;line-height: 16px;"> 2 to 11 years </p>
+			</div>
+			<div class="inputBx">
+				<p>Infants</p>
+				<select class="" style="width: 84px; max-height: 198px" name="drpInfants">
+                        <option value="" class=" fs-3 hover:bg-secondary-500 c-pointer hover:c-white"> </option>
+                        <option value="1" class=" fs-3 hover:bg-secondary-500 c-pointer hover:c-white" selected>0</option>
+                        <option value="2" class=" fs-3 hover:bg-secondary-500 c-pointer hover:c-white">1</option>
+                </select>
+				<p style="color: #999; font-size: 12px;line-height: 16px;"> Below 2 years </p>
+			</div>
+			<div class="inputBx">
+				<p class="white">&nbsp;</p>
+				<input type="submit" value="Search" />
+			</div>
+
+
+		</div>
+	</div>
+</div>
+
+<div>
+    <div style="float: right">
+        <input type="checkbox" class="checkbox" id="checkbox">
+      <label for="checkbox" class="label">
+        <div class='ball'/>
+      </label>
+    </div>
+</div>
+<script>
+	const checkbox = document.getElementById('checkbox');
+
+checkbox.addEventListener('change', ()=>{
+  document.body.classList.toggle('dark');
+})
+</script>
+ </form>
+</body>
+</html>
