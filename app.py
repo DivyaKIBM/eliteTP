@@ -275,12 +275,12 @@ def itinerary():
             # driver = selenium.webdriver.Edge(executable_path=APP_ROOT + "\\msedgedriver.exe")
             driver = selenium.webdriver.Edge(executable_path=os.path.abspath("msedgedriver.exe"))
         elif browser.strip() == 'chrome':
-            from selenium.webdriver.chrome.options import Options
-            options = Options()
-            options.add_argument('--headless')
+            #from selenium.webdriver.chrome.options import Options
+            # options = Options()
+            # options.add_argument('--headless')
             # options.add_argument('--disable-gpu')
             # driver = selenium.webdriver.Chrome(options=options)
-            driver = selenium.webdriver.Edge(executable_path=APP_ROOT + "\\chromedriver.exe")
+            driver = selenium.webdriver.Chrome(executable_path=APP_ROOT + "\\chromedriver.exe")
 
         driver.get(basedataURL)
         element_xpath = '//*[@id="left-side--wrapper"]/div[2]'  # First box with relevant flight data.
